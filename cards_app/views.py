@@ -1,11 +1,13 @@
-from django.shortcuts import render
+from rest_framework.decorators import api_view
+from rest_framework.response import Response
+from rest_framework import status
+from .models import Flashcard, Review
 from cards_app.utils import get_overdue_flashcards
 
 
 def overdue_flashcards(request):
     overdue_cards = get_overdue_flashcards()
     
-    # Prepare flashcards data as a list of dictionaries with front and back HTML
     flashcard_data = []
     for card in overdue_cards:
         flashcard_data.append({
@@ -13,9 +15,30 @@ def overdue_flashcards(request):
             'front': card.front,
             'back': card.back,
         })
-    
-    # Pass the flashcard data to the template as a JavaScript variable
     return render(request, 'cards_app/overdue_flashcards.html', {
         'flashcard_data': flashcard_data
     })
 
+
+@api_view(['POST'])
+def record_review(request):
+    flashcard_id = request.data.get('flashcard_id')
+    remembered = request.data.get('remembered')
+
+    if flashcard_id is None or remembered is None:
+        return Response({'error': 'Both flashcard_id and remembered are required.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    if remembered not in [x[0] for x in Review.REMEMBER_CHOICES]:
+        return Response({'error': 'remembered field invalid.'}, status = 400)
+    
+    try:
+        flashcard = Flashcard.objects.get(id=flashcard_id)
+    except Flashcard.DoesNotExist:
+        return Response({'error': 'Flashcard not found.'}, status=status.HTTP_404_NOT_FOUND)
+    
+    Review.objects.create(
+        flashcard=flashcard,
+        remembered=remembered
+    )
+
+    return Response({"success": "true"}, status=status.HTTP_201_CREATED)
