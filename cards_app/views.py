@@ -18,3 +18,4 @@ def overdue_flashcards(request):
     return render(request, 'cards_app/overdue_flashcards.html', {
         'flashcard_data': flashcard_data
     })
+
