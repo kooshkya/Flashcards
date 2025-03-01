@@ -52,7 +52,9 @@
 <body>
     <h1>Welcome to the Flashcard App</h1>
     <ul>
-        <li><a href="{% url 'overdue_flashcards' %}">Review Flashcards</a></li>
+        {% for deck in decks %}
+        <li><a href="{% url 'overdue_flashcards' deck_id=deck.id %}">Review Flashcards for {{ deck.name }}</a></li>
+        {% endfor %}
         <li><a href="/admin/cards_app/flashcard/add/">Add Flashcards</a></li>
     </ul>
 

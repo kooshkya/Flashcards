@@ -1,13 +1,13 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Flashcard, Review
+from .models import Flashcard, Review, Deck
 from cards_app.utils import get_overdue_flashcards
 from django.shortcuts import render
 
 
-def overdue_flashcards(request):
-    overdue_cards = get_overdue_flashcards()
+def overdue_flashcards(request, deck_id):
+    overdue_cards = get_overdue_flashcards(deck_id=deck_id)
     
     flashcard_data = []
     for card in overdue_cards:
@@ -22,7 +22,9 @@ def overdue_flashcards(request):
     })
 
 def home(request):
-    return render(request, 'cards_app/home.html', {"cards_number": len(get_overdue_flashcards()), "total_cards": Flashcard.objects.count()})
+    return render(request, 'cards_app/home.html', {"decks": [x for x in Deck.objects.all()],
+                                                   "cards_number": {x.name: len(get_overdue_flashcards(x.id)) for x in Deck.objects.all()}, 
+                                                   "total_cards": {x.name: Flashcard.objects.filter(deck=x).count() for x in Deck.objects.all()}})
 
 @api_view(['POST'])
 def record_review(request):

@@ -1,12 +1,12 @@
 from django.utils import timezone
-from cards_app.models import Flashcard, Review
+from cards_app.models import Flashcard, Review, Deck
 from cards_app.models import LEITNER_REVIEW_PERIODS
 import random
 
-def get_overdue_flashcards():
+def get_overdue_flashcards(deck_id: int):
     overdue_flashcards = []
 
-    for flashcard in Flashcard.objects.all():
+    for flashcard in Flashcard.objects.filter(deck_id=deck_id):
         last_review = Review.objects.filter(flashcard=flashcard).order_by('-review_date').first()
 
         if last_review:
