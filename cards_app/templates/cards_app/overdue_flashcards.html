@@ -143,13 +143,47 @@
             front = true;
         }
 
+        function getCsrfToken() {
+        let csrfToken = null;
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith('csrftoken=')) {
+                csrfToken = cookie.substring('csrftoken='.length, cookie.length);
+                break;
+            }
+        }
+        return csrfToken;
+        }
+
         function reviewCard(remembered) {
             if (finished) {
                 return;
             }
             const cardId = flashcards[currentCardIndex].id;
+            const csrfToken = getCsrfToken();
+
             console.log(`Review for Card ${cardId}: ${remembered ? 'Remembered' : 'Not Remembered'}`);
-            nextCard();
+
+            fetch('/cards/api/create_review/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRFToken': csrfToken,
+                },
+                body: JSON.stringify({
+                    flashcard_id: cardId,
+                    remembered: remembered
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Review created:', data);
+                nextCard();
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
         }
 
         window.onload = function() {
@@ -163,8 +197,8 @@
             <div id="flashcard-front"></div> 
             
             <button id="toggle-button" onclick="toggleBack()">Show/Hide Back</button>
-            <button id="remember-button" onclick="reviewCard(true)">I Remembered</button>
-            <button id="forget-button" onclick="reviewCard(false)">I Don't Remember</button>
+            <button id="remember-button" onclick="reviewCard('Y')">I Remembered</button>
+            <button id="forget-button" onclick="reviewCard('N')">I Don't Remember</button>
             <button id="next-card" onclick="nextCard()">Next Card</button>
         </div>
     {% else %}
