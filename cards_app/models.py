@@ -3,12 +3,14 @@ from ckeditor.fields import RichTextField
 
 from datetime import timedelta
 
+unit_of_cycle = timedelta(hours=1)
+
 LEITNER_REVIEW_PERIODS = {
-    1: timedelta(days=1),  
-    2: timedelta(days=2),  
-    3: timedelta(days=5),  
-    4: timedelta(days=10),  
-    5: timedelta(days=30)
+    1: unit_of_cycle,
+    2: unit_of_cycle * 2,  
+    3: unit_of_cycle * 5,  
+    4: unit_of_cycle * 10,  
+    5: unit_of_cycle * 30,
 }
 
 class Flashcard(models.Model):
