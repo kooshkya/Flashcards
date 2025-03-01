@@ -3,7 +3,7 @@ from ckeditor.fields import RichTextField
 
 from datetime import timedelta
 
-unit_of_cycle = timedelta(hours=1)
+unit_of_cycle = timedelta(hours=24)
 
 LEITNER_REVIEW_PERIODS = {
     1: unit_of_cycle,
