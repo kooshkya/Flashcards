@@ -15,6 +15,7 @@ def overdue_flashcards(request):
             'id': card.id,
             'front': card.front,
             'back': card.back,
+            'box': card.box,
         })
     return render(request, 'cards_app/overdue_flashcards.html', {
         'flashcard_data': flashcard_data

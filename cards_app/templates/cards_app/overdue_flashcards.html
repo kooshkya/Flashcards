@@ -138,22 +138,24 @@
 
         function displayCard(index) {
             const frontElement = document.getElementById("flashcard-front");
+            const infoElement = document.getElementById("flashcard-info");
             
             frontElement.innerHTML = flashcards[index].front;
+            infoElement.textContent = `id ${flashcards[index].id}, box ${flashcards[index].box}`
             front = true;
         }
 
         function getCsrfToken() {
-        let csrfToken = null;
-        const cookies = document.cookie.split(';');
-        for (let i = 0; i < cookies.length; i++) {
-            const cookie = cookies[i].trim();
-            if (cookie.startsWith('csrftoken=')) {
-                csrfToken = cookie.substring('csrftoken='.length, cookie.length);
-                break;
+            let csrfToken = null;
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.startsWith('csrftoken=')) {
+                    csrfToken = cookie.substring('csrftoken='.length, cookie.length);
+                    break;
+                }
             }
-        }
-        return csrfToken;
+            return csrfToken;
         }
 
         function reviewCard(remembered) {
@@ -194,6 +196,7 @@
 <body>
     {% if flashcard_data %}
         <div id="flashcard">
+            <div id="flashcard-info"></div>
             <div id="flashcard-front"></div> 
             
             <button id="toggle-button" onclick="toggleBack()">Show/Hide Back</button>
