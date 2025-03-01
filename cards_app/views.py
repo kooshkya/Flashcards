@@ -20,6 +20,8 @@ def overdue_flashcards(request):
         'flashcard_data': flashcard_data
     })
 
+def home(request):
+    return render(request, 'cards_app/home.html')
 
 @api_view(['POST'])
 def record_review(request):
