@@ -3,41 +3,150 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        /* Flashcard Container */
+        #flashcard {
+            padding: 2em 6em;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            position: relative;
+            min-width: 12em;
+        }
+
+        #flashcard-front {
+            font-size: 1.4rem;
+            width: 100%;
+            height: 100%;
+            min-height: 12em;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 10px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            box-sizing: border-box;
+            transition: opacity 0.3s ease;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #45a049;
+        }
+
+        button#toggle-button {
+            background-color: #c0ad00;
+        }
+
+        button#toggle-button:hover {
+            background-color: #8f8100;
+        }
+
+        button#next-card {
+            background-color: #008CBA;
+        }
+
+        button#next-card:hover {
+            background-color: #007bb5;
+        }
+
+        button#forget-button {
+            background-color: #d40000;
+        }
+
+        button#forget-button:hover {
+            background-color: #c00000;
+        }
+
+        /* Button Group Alignment */
+        button + button {
+            margin-top: 10px;
+        }
+
+        /* No Overdue Flashcards Message */
+        p {
+            font-size: 1.2rem;
+            color: #555;
+        }
+
+    </style>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Overdue Flashcards</title>
     <script>
         let currentCardIndex = 0;
         let flashcards = {{ flashcard_data|safe }};  // Pass the list of flashcards from Django to JS
-        console.log(`flashcards ${flashcards}`);
+        let front = true;
+        let finished = false;
 
-        function showBack() {
-            const backElement = document.getElementById("flashcard-back");
-            backElement.style.display = "block";
-        }
-
-        function hideBack() {
-            const backElement = document.getElementById("flashcard-back");
-            backElement.style.display = "none";
+        function toggleBack() {
+            if (finished) {
+                return;
+            }
+            const frontElement = document.getElementById("flashcard-front");
+            if (front) {
+                frontElement.innerHTML = flashcards[currentCardIndex].back;
+                front = false;
+            } else {
+                frontElement.innerHTML = flashcards[currentCardIndex].front;
+                front = true;
+            }
         }
 
         function nextCard() {
             if (currentCardIndex < flashcards.length - 1) {
                 currentCardIndex++;
                 displayCard(currentCardIndex);
+            } else {
+                const frontElement = document.getElementById("flashcard-front");
+                frontElement.textContent = "All Done!";
+                frontElement.style.backgroundColor = "#00AA00";
+                finished = true;
             }
         }
 
         function displayCard(index) {
             const frontElement = document.getElementById("flashcard-front");
-            const backElement = document.getElementById("flashcard-back");
             
             frontElement.innerHTML = flashcards[index].front;
-            backElement.innerHTML = flashcards[index].back;
-            backElement.style.display = "none";
+            front = true;
         }
 
         function reviewCard(remembered) {
+            if (finished) {
+                return;
+            }
             const cardId = flashcards[currentCardIndex].id;
             console.log(`Review for Card ${cardId}: ${remembered ? 'Remembered' : 'Not Remembered'}`);
             nextCard();
@@ -49,18 +158,14 @@
     </script>
 </head>
 <body>
-    <h1>Overdue Flashcards</h1>
-    
     {% if flashcard_data %}
         <div id="flashcard">
-            <div id="flashcard-front"></div>  <!-- Front of the flashcard -->
-            <div id="flashcard-back" style="display:none;"></div>  <!-- Back of the flashcard (hidden initially) -->
+            <div id="flashcard-front"></div> 
             
-            <button onclick="showBack()">Show Back</button>
-            <button onclick="hideBack()">Hide Back</button>
-            <button onclick="reviewCard(true)">Yes, I Remembered</button>
-            <button onclick="reviewCard(false)">No, I Didn't Remember</button>
-            <button onclick="nextCard()">Next Card</button>
+            <button id="toggle-button" onclick="toggleBack()">Show/Hide Back</button>
+            <button id="remember-button" onclick="reviewCard(true)">I Remembered</button>
+            <button id="forget-button" onclick="reviewCard(false)">I Don't Remember</button>
+            <button id="next-card" onclick="nextCard()">Next Card</button>
         </div>
     {% else %}
         <p>No overdue flashcards at the moment.</p>
