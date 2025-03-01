@@ -13,6 +13,15 @@ LEITNER_REVIEW_PERIODS = {
     5: unit_of_cycle * 30,
 }
 
+class Deck(models.Model):
+    name = models.CharField(max_length=100)
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"Deck {self.name}"
+
 class Flashcard(models.Model):
     BOX_CHOICES = [(i, str(i)) for i in range(1, 6)]
 
@@ -23,6 +32,7 @@ class Flashcard(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     box = models.IntegerField(choices=BOX_CHOICES, default=1)
+    deck = models.ForeignKey(Deck, on_delete=models.RESTRICT, related_name="flashcards")
 
     def __str__(self):
         return f"Flashcard {self.id} (Box {self.box})"
