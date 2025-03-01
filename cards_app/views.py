@@ -36,10 +36,16 @@ def record_review(request):
         flashcard = Flashcard.objects.get(id=flashcard_id)
     except Flashcard.DoesNotExist:
         return Response({'error': 'Flashcard not found.'}, status=status.HTTP_404_NOT_FOUND)
-    
+
     Review.objects.create(
         flashcard=flashcard,
         remembered=remembered
     )
+
+    if remembered == "N":
+        flashcard.box = 1
+    else:
+        flashcard.box = min(5, flashcard.box + 1)
+    flashcard.save()
 
     return Response({"success": "true"}, status=status.HTTP_201_CREATED)

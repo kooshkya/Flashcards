@@ -1,8 +1,7 @@
 from django.utils import timezone
-from datetime import timedelta
 from cards_app.models import Flashcard, Review
 from cards_app.models import LEITNER_REVIEW_PERIODS
-
+import random
 
 def get_overdue_flashcards():
     overdue_flashcards = []
@@ -20,4 +19,6 @@ def get_overdue_flashcards():
                 overdue_flashcards.append(flashcard)
         else:
             overdue_flashcards.append(flashcard)
+    
+    random.shuffle(overdue_flashcards)
     return overdue_flashcards
