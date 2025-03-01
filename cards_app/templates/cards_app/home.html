@@ -41,6 +41,12 @@
         a:hover {
             text-decoration: underline;
         }
+
+        p {
+            font-family: 'Courier New', Courier, monospace;
+            font-size: 2em;
+        }
+
     </style>
 </head>
 <body>
@@ -49,5 +55,12 @@
         <li><a href="{% url 'overdue_flashcards' %}">Review Flashcards</a></li>
         <li><a href="/admin/cards_app/flashcard/add/">Add Flashcards</a></li>
     </ul>
+
+    <p>
+        number of cards ready for review: {{ cards_number }}
+    </p>
+    <p>
+        total number of cards: {{ total_cards }}
+    </p>
 </body>
 </html>

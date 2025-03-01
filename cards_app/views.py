@@ -21,7 +21,7 @@ def overdue_flashcards(request):
     })
 
 def home(request):
-    return render(request, 'cards_app/home.html')
+    return render(request, 'cards_app/home.html', {"cards_number": len(get_overdue_flashcards()), "total_cards": Flashcard.objects.count()})
 
 @api_view(['POST'])
 def record_review(request):
